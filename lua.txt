@@ -1,0 +1,135 @@
++-------------------+          +-------------------+          +---------------------+
+|     Product       |          |     Ingredient    |          |       Recipe        |
++-------------------+          +-------------------+          +---------------------+
+| id (PK)           |<-------->| id (PK)           |          | id (PK)             |
+| name              |          | name              |<-------->| name                |
+| category          |          | quantity          |          | ingredients         |
+| quantity          |          | unit              |          | (ingredient_id, qty)|
+| unit              |          | threshold         |          +---------------------+
+| threshold         |          +-------------------+
+| price             |
++-------------------+
+
++-------------------+          +-------------------+          +-------------------+
+|     Order         |          |    OrderItem      |          |  PaymentStatus    |
++-------------------+          +-------------------+          +-------------------+
+| id (PK)           |<-------->| id (PK)           |          | id (PK)           |
+| customer_id (FK)  |          | order_id (FK)     |          | order_id (FK)     |
+| total             |          | product_id (FK)   |          | status            |
+| date              |          | recipe_id (FK)    |          | paid              |
+| status            |          | quantity          |          | payment_method    |
+| shipping_address  |          +-------------------+          | mp_alias          |
+| payment_method    |                                         | mp_status         |
++-------------------+                                         +-------------------+
+
++-------------------+          +-------------------+          +-------------------+
+|     Customer      |          |  Supplier         |          |   MercadoPago      |
++-------------------+          +-------------------+          +-------------------+
+| id (PK)           |          | id (PK)           |          | id (PK)           |
+| name              |          | name              |          | payment_id        |
+| email             |          | contact           |          | amount            |
+| phone             |          | phone             |          | status            |
+| shipping_address  |          +-------------------+          | date              |
++-------------------+                                         +-------------------+
+
+Descripción de las Relaciones y Campos
+
+Tabla Product:
+        {
+        id: Identificador único del producto.
+        name: Nombre del producto.
+        category: Categoría del producto (e.g., "bebida", "snack", "ingrediente").
+        quantity: Cantidad actual en stock.
+        unit: Unidad de medida (e.g., "unidad", "paquete", "gramos").
+        threshold: Cantidad mínima antes de emitir una alerta de bajo stock.
+        price: Precio del producto.
+        
+        }
+
+Tabla Ingredient:
+        {
+        id: Identificador único del ingrediente.
+        name: Nombre del ingrediente.
+        quantity: Cantidad actual en stock.
+        unit: Unidad de medida (e.g., "unidad", "gramos").
+        threshold: Cantidad mínima antes de emitir una alerta de bajo stock.
+        }
+
+Tabla Recipe:
+        {
+        id: Identificador único de la receta.
+        name: Nombre de la receta (e.g., "pancho").
+        ingredients: Lista de ingredientes necesarios para la receta con sus cantidades respectivas.
+        }
+
+Tabla Order:
+        {
+        id: Identificador único del pedido.
+        customer_id: Identificador del cliente que realizó el pedido.
+        total: Total del pedido.
+        date: Fecha del pedido.
+        status: Estado del pedido (e.g., "en proceso", "completado").
+        shipping_address: Dirección de envío del pedido.
+        payment_method: Método de pago utilizado.
+        }
+
+Tabla OrderItem:
+        {
+        id: Identificador único del ítem en el pedido.
+        order_id: Identificador del pedido al que pertenece el ítem.
+        product_id: Identificador del producto (si es un producto individual del kiosco).
+        recipe_id: Identificador de la receta (si es un ítem de comida rápida).
+        quantity: Cantidad del ítem en el pedido.
+        }
+
+Tabla PaymentStatus:
+        {
+        id: Identificador único del estado de pago.
+        order_id: Identificador del pedido al que se refiere el estado de pago.
+        status: Estado del pago (e.g., "pagado", "pendiente").
+        paid: Indica si el pedido ha sido pagado o no.
+        payment_method: Método de pago utilizado.
+        mp_alias: Alias de MercadoPago utilizado para el pago.
+        mp_status: Estado del pago en MercadoPago.
+        }
+
+Tabla Customer:
+        {
+        id: Identificador único del cliente.
+        name: Nombre del cliente.
+        email: Correo electrónico del cliente.
+        phone: Teléfono del cliente.
+        shipping_address: Dirección de envío del cliente.
+        }
+
+Tabla Supplier:
+        {
+        id: Identificador único del proveedor.
+        name: Nombre del proveedor.
+        contact: Información de contacto del proveedor.
+        phone: Teléfono del proveedor.
+        }
+
+Tabla MercadoPago:
+        {
+        id: Identificador único del pago.
+        payment_id: Identificador del pago en MercadoPago.
+        amount: Monto del pago.
+        status: Estado del pago en MercadoPago.
+        date: Fecha del pago.
+        }
+
+
+Flujo de Trabajo para el Pago con MercadoPago
+
+1-Generar Pedido: Un cliente realiza un pedido que puede contener productos del kiosco y/o recetas de comida rápida.
+
+2-Crear Orden de Pago: Se genera una orden de pago en MercadoPago utilizando el alias proporcionado.
+
+3-Verificar Pago: Se consulta la API de MercadoPago para obtener el estado del pago.
+
+4-Actualizar Estado de Pago: Si el pago es exitoso y coincide con el total del pedido, se actualiza el estado del pago y el estado del pedido.
+
+5-Procesar Pedido: Se actualiza el inventario restando las cantidades correspondientes de productos e ingredientes.
+
+6-Notificar al Cliente: Se notifica al cliente sobre el estado del pedido (e.g., "en proceso", "completado").

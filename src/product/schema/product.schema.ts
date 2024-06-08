@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
+export type ProductDocument = Product & Document
 @Schema()
 export class Product extends Document {
   @Prop({ required: true })
@@ -11,7 +12,7 @@ export class Product extends Document {
   @Prop({ required: true })
   unit: string
   @Prop({ required: true })
-  treshold: string
+  threshold: number
   @Prop({ required: true })
   price: string
   @Prop({ required: true })

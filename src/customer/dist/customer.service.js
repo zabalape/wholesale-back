@@ -45,85 +45,57 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.ProductController = void 0;
+exports.ProductService = void 0;
 var common_1 = require("@nestjs/common");
-var ProductController = /** @class */ (function () {
-    function ProductController(productService) {
-        this.productService = productService;
+var mongoose_1 = require("@nestjs/mongoose");
+var customer_schema_1 = require("./schema/customer.schema");
+var ProductService = /** @class */ (function () {
+    function ProductService(productModel) {
+        this.productModel = productModel;
     }
-    ProductController.prototype.findAll = function (page, limit) {
-        if (page === void 0) { page = 1; }
-        if (limit === void 0) { limit = 10; }
+    ProductService.prototype.findAll = function (page, limit) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.productService.findAll(+page, +limit)];
+                return [2 /*return*/, this.productModel
+                        .find({ estaEliminado: false })
+                        .skip((page - 1) * limit)
+                        .limit(limit)
+                        .exec()];
             });
         });
     };
-    ProductController.prototype.search = function (query) {
+    ProductService.prototype.findOne = function (id) {
         return __awaiter(this, void 0, Promise, function () {
+            var customer;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.productService.search(query)];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.productModel.
+                            findOne({ _id: id, estaEliminado: false })
+                            .exec()];
+                    case 1:
+                        customer = _a.sent();
+                        if (!customer) {
+                            throw new common_1.NotFoundException("El cliente con el ID: " + id + ", no se encuentra");
+                        }
+                        return [2 /*return*/, customer];
+                }
             });
         });
     };
-    ProductController.prototype.findOne = function (id) {
+    ProductService.prototype.search = function (query) {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.productService.findOne(id)];
+                return [2 /*return*/, this.productModel.find({
+                        nombre: new RegExp(query, 'i'),
+                        estaEliminado: false
+                    })];
             });
         });
     };
-    ProductController.prototype.create = function (createProductDto) {
-        return __awaiter(this, void 0, Promise, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.productService.create(createProductDto)];
-            });
-        });
-    };
-    ProductController.prototype.update = function (id, updateProductDto) {
-        return __awaiter(this, void 0, Promise, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.productService.update(id, updateProductDto)];
-            });
-        });
-    };
-    ProductController.prototype["delete"] = function (id) {
-        return __awaiter(this, void 0, Promise, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.productService["delete"](id)];
-            });
-        });
-    };
-    __decorate([
-        common_1.Get(),
-        __param(0, common_1.Query('page')),
-        __param(1, common_1.Query('limit'))
-    ], ProductController.prototype, "findAll");
-    __decorate([
-        common_1.Get('buscar'),
-        __param(0, common_1.Query('q'))
-    ], ProductController.prototype, "search");
-    __decorate([
-        common_1.Get(':id'),
-        __param(0, common_1.Param('id'))
-    ], ProductController.prototype, "findOne");
-    __decorate([
-        common_1.Post(),
-        __param(0, common_1.Body())
-    ], ProductController.prototype, "create");
-    __decorate([
-        common_1.Put(':id'),
-        __param(0, common_1.Param('id')),
-        __param(1, common_1.Body())
-    ], ProductController.prototype, "update");
-    __decorate([
-        common_1.Delete(':id'),
-        __param(0, common_1.Param('id'))
-    ], ProductController.prototype, "delete");
-    ProductController = __decorate([
-        common_1.Controller('productos')
-    ], ProductController);
-    return ProductController;
+    ProductService = __decorate([
+        common_1.Injectable(),
+        __param(0, mongoose_1.InjectModel(customer_schema_1.Customer.name))
+    ], ProductService);
+    return ProductService;
 }());
-exports.ProductController = ProductController;
+exports.ProductService = ProductService;

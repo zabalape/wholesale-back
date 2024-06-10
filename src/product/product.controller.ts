@@ -13,7 +13,7 @@ import { CreateProductDto } from './dto/create-product.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
 import { Product } from './schema/product.schema'
 
-@Controller('products')
+@Controller('productos')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
@@ -25,7 +25,7 @@ export class ProductController {
     return this.productService.findAll(+page, +limit)
   }
 
-  @Get('search')
+  @Get('buscar')
   async search(@Query('q') query: string): Promise<Product[]> {
     return this.productService.search(query)
   }

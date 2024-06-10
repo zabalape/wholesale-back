@@ -1,30 +1,22 @@
 /* eslint-disable prettier/prettier */
 import { IsString, IsNumber, IsNotEmpty, IsBoolean, Min } from 'class-validator'
 
-export class CreateProductDto {
+export class CreateCustomerDto {
   @IsString()
   @IsNotEmpty()
   nombre: string
 
   @IsString()
   @IsNotEmpty()
-  categoria: string
+  email: string
 
   @IsNumber()
   @Min(0)
-  cantidad: number
+  telefono: number
 
   @IsString()
   @IsNotEmpty()
-  unidad: string
-
-  @IsNumber()
-  @Min(0)
-  precio: number
-
-  @IsNumber()
-  @Min(0)
-  umbral: number
+  direccion: string
 
   @IsBoolean()
   @IsNotEmpty()
